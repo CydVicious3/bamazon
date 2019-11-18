@@ -25,8 +25,9 @@ function showProduct() {
     console.table(res)
     askCustomer()
   })
-
 }
+
+
 function askCustomer() {
   inquirer
     .prompt([
@@ -52,7 +53,7 @@ function askCustomer() {
         //console.log(data)
         // verify if you have enought stock
         if (parseInt(answer.quantity) <= data[0].stock) {
-          console.log('Congrats on your item!')
+          console.log('You have chosen well!')
           var newStock = data[0].stock - parseInt(answer.quantity)
           console.log("new:", newStock, answer.item)
           db.query("UPDATE products SET ? WHERE ?",
@@ -66,27 +67,23 @@ function askCustomer() {
             ],
             function (error, updateData) {
               if (error) throw err;
-              console.log('Bid placed successfully!')
-              showProduct()
+              console.log('Order has been processed!')
+              showPrice()
             }
           )
-          // if you have enough then you sell the product ( show the customer a message with the total prize, update the db)
-
         } else {
-          console.log('Sorry, out of stock!')
+          console.log('Sorry, insufficient stock!')
           showProduct()
-          // if not enought tell the customer
         }
       }
-
-        // if you have enough then you sell the product ( show the customer a message with the total prize, update the db)
-
-        // if not enought tell the customer
-
 
         // you can ask the customer if wnat anything else (if yes show the producg if not close the app)
       )
     })
 }
 
-
+function showPrice() {
+  db.query("SELECT * FROM products WHERE price", function (err, data) {
+    console.log('Order has been processed!')
+  })
+}
