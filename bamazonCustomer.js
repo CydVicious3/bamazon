@@ -1,7 +1,7 @@
 const inquirer = require('inquirer')
 const mysql = require('mysql2')
 // adding console method for table visuals
-require('console.table')
+//require('console.table')
 
 
 const db = mysql.createConnection({
@@ -48,10 +48,9 @@ function askCustomer() {
       console.log(answer)
       // select the product from the db
       db.query("SELECT * FROM products WHERE item_id=" + answer.item, function (err, data) {
+        // verify if error if no data then product is not in the store
 
-        //// verify if error if no data then product is not in the store
-        //console.log(data)
-        // verify if you have enought stock
+        // verify if you have enough stock
         if (parseInt(answer.quantity) <= data[0].stock) {
           console.log('You have chosen well!')
           var newStock = data[0].stock - parseInt(answer.quantity)
@@ -68,7 +67,11 @@ function askCustomer() {
             function (error, updateData) {
               if (error) throw err;
               console.log('Order has been processed!')
-              showPrice()
+              function showPrice() {
+                db.query("SELECT price FROM products WHERE item_id", function (err, data) {
+                  console.log(`Your total amount due:${data}!`)
+                })
+              }
             }
           )
         } else {
@@ -76,14 +79,8 @@ function askCustomer() {
           showProduct()
         }
       }
-
-        // you can ask the customer if wnat anything else (if yes show the producg if not close the app)
+        //ask the customer if they want anything else (if yes show the producg if not close the app)
       )
     })
 }
 
-function showPrice() {
-  db.query("SELECT * FROM products WHERE price", function (err, data) {
-    console.log('Order has been processed!')
-  })
-}
